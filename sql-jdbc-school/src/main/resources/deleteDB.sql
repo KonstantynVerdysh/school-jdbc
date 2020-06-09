@@ -1,0 +1,2 @@
+DROP DATABASE school;
+DROP USER user1;
