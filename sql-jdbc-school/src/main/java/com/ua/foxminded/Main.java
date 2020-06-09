@@ -31,7 +31,10 @@ public class Main {
         Properties postgres = propReader.getProperties("postgres.properties");
         Properties user1 = propReader.getProperties("user1.properties");
         
+        // create database
         scriptExec.execute(postgres.getProperty(url), postgres.getProperty(user), postgres.getProperty(password), "createDB.sql");
+        
+        // create tables
         scriptExec.execute(user1.getProperty(url), user1.getProperty(user), user1.getProperty(password), "createTables.sql");
 
         DataGenerator generator = new DataGenerator();
@@ -57,6 +60,7 @@ public class Main {
             System.out.println(e.getMessage());
         }
         
+        // drop database
         scriptExec.execute(postgres.getProperty(url), postgres.getProperty(user), postgres.getProperty(password), "deleteDB.sql");
     }
 }
