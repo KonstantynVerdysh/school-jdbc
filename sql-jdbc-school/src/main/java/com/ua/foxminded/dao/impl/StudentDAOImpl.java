@@ -106,7 +106,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void assignStudentsToCourse(Map<Student, List<Course>> students) throws DAOException {
+    public void assignToCourse(Map<Student, List<Course>> students) throws DAOException {
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {

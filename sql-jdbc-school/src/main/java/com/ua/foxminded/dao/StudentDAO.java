@@ -13,7 +13,7 @@ public interface StudentDAO {
     void deleteById(int id) throws DAOException;
     List<Student> getByCourseName(String courseName) throws DAOException;
     void assignToCourse(int studentId, int courseId) throws DAOException;
-    void assignStudentsToCourse(Map<Student, List<Course>> students) throws DAOException;
+    void assignToCourse(Map<Student, List<Course>> students) throws DAOException;
     void deleteFromCourse(int studentId, int courseId) throws DAOException;
     List<Student> showAll() throws DAOException;
 }

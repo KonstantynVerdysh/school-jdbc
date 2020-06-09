@@ -54,7 +54,7 @@ public class Main {
             groupDAO.create(groups);
             studentDAO.insert(students);
             courseDAO.create(courses);
-            studentDAO.assignStudentsToCourse(generator.relateStudentsToCourses(students, courses));
+            studentDAO.assignToCourse(generator.relateStudentsToCourses(students, courses));
             userInterface.runMenu();
         } catch (DAOException e) {
             System.out.println(e.getMessage());

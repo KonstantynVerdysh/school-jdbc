@@ -85,8 +85,7 @@ public class CourseDAOImpl implements CourseDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-//            throw new DAOException("Can't get student by id.");
+            throw new DAOException("Can't get student by id.");
         }
         return result;
     }
