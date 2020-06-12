@@ -1,4 +1,4 @@
-package com.ua.foxminded.dao;
+package com.ua.foxminded.controller.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;

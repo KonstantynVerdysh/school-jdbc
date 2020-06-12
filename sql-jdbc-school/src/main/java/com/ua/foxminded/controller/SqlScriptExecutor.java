@@ -7,11 +7,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.ua.foxminded.dao.ConnectionFactory;
+import com.ua.foxminded.controller.dao.ConnectionFactory;
 
 public class SqlScriptExecutor {
-    public void execute(String url, String user, String password, String script) {
-        ConnectionFactory connectionFactory = new ConnectionFactory(url, user, password);
+    public void execute(ConnectionFactory connectionFactory, String script) {
         String filePath = "";
         try {
             if (getClass().getClassLoader().getResource(script) == null) {

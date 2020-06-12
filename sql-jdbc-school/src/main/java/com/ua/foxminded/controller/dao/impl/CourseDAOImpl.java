@@ -1,4 +1,4 @@
-package com.ua.foxminded.dao.impl;
+package com.ua.foxminded.controller.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ua.foxminded.dao.ConnectionFactory;
-import com.ua.foxminded.dao.CourseDAO;
-import com.ua.foxminded.dao.exceptions.DAOException;
+import com.ua.foxminded.controller.dao.ConnectionFactory;
+import com.ua.foxminded.controller.dao.CourseDAO;
+import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
 import com.ua.foxminded.model.Course;
 
 public class CourseDAOImpl implements CourseDAO {
@@ -20,7 +20,7 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public void create(Course course) throws DAOException {
+    public void create(Course course) throws SchoolDAOException {
         String sql = "INSERT INTO courses (course_name, course_description) VALUES (?, ?);";
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -29,12 +29,12 @@ public class CourseDAOImpl implements CourseDAO {
             pStatement.addBatch();
             pStatement.executeBatch();
         } catch (SQLException e) {
-            throw new DAOException("Can't write course.");
+            throw new SchoolDAOException("Can't write course.");
         } 
     }
 
     @Override
-    public void create(List<Course> courses) throws DAOException {
+    public void create(List<Course> courses) throws SchoolDAOException {
         String sql = "INSERT INTO courses (course_name, course_description) VALUES (?, ?);";
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -45,12 +45,12 @@ public class CourseDAOImpl implements CourseDAO {
             }
             pStatement.executeBatch();
         } catch (SQLException e) {
-            throw new DAOException("Can't write courses.");
+            throw new SchoolDAOException("Can't write courses.");
         } 
     }
 
     @Override
-    public List<Course> showAll() throws DAOException {
+    public List<Course> showAll() throws SchoolDAOException {
         String sql = "SELECT course_id, course_name, course_description FROM courses;";
         List<Course> result = new ArrayList<>();
         try (Connection connection = connectionFactory.getConnection();
@@ -64,13 +64,13 @@ public class CourseDAOImpl implements CourseDAO {
                 result.add(course);
             }
         } catch (SQLException e) {
-            throw new DAOException("Can't read courses.");
+            throw new SchoolDAOException("Can't read courses.");
         }
         return result;
     }
 
     @Override
-    public List<Course> getByStudentId(int studentId) throws DAOException {
+    public List<Course> getByStudentId(int studentId) throws SchoolDAOException {
         String sql = "SELECT c.course_id, c.course_name FROM students_courses sc JOIN courses c USING (course_id) JOIN students s USING (student_id) WHERE sc.student_id = ?;";
         List<Course> result = new ArrayList<>();
         try (Connection connection = connectionFactory.getConnection();
@@ -85,7 +85,7 @@ public class CourseDAOImpl implements CourseDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Can't get student by id.");
+            throw new SchoolDAOException("Can't get student by id.");
         }
         return result;
     }

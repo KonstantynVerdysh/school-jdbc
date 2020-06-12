@@ -1,67 +1,37 @@
 package com.ua.foxminded;
 
-import java.util.List;
 import java.util.Properties;
 
-import com.ua.foxminded.controller.DataGenerator;
+import com.ua.foxminded.controller.ApplicationRunner;
 import com.ua.foxminded.controller.PropertyReader;
 import com.ua.foxminded.controller.SqlScriptExecutor;
-import com.ua.foxminded.dao.ConnectionFactory;
-import com.ua.foxminded.dao.CourseDAO;
-import com.ua.foxminded.dao.GroupDAO;
-import com.ua.foxminded.dao.StudentDAO;
-import com.ua.foxminded.dao.exceptions.DAOException;
-import com.ua.foxminded.dao.impl.CourseDAOImpl;
-import com.ua.foxminded.dao.impl.GroupDAOImpl;
-import com.ua.foxminded.dao.impl.StudentDAOImpl;
-import com.ua.foxminded.model.Course;
-import com.ua.foxminded.model.Group;
-import com.ua.foxminded.model.Student;
-import com.ua.foxminded.view.UserInterface;
+import com.ua.foxminded.controller.dao.ConnectionFactory;
 
 public class Main {
     public static void main(String[] args) {
         final String url = "db.url";
-        final String user = "db.user";
+        final String userName = "db.user";
         final String password = "db.password";
         
-        SqlScriptExecutor scriptExec = new SqlScriptExecutor();
         PropertyReader propReader = new PropertyReader();
-        
         Properties postgres = propReader.getProperties("postgres.properties");
-        Properties user1 = propReader.getProperties("user1.properties");
+        Properties user = propReader.getProperties("user.properties");
+        
+        ConnectionFactory postgresConnection = new ConnectionFactory(postgres.getProperty(url), postgres.getProperty(userName), postgres.getProperty(password));
+        ConnectionFactory userConnection = new ConnectionFactory(user.getProperty(url), user.getProperty(userName), user.getProperty(password));
+        
+        SqlScriptExecutor scriptExec = new SqlScriptExecutor();
         
         // create database
-        scriptExec.execute(postgres.getProperty(url), postgres.getProperty(user), postgres.getProperty(password), "createDB.sql");
+        scriptExec.execute(postgresConnection, "createDB.sql");
         
         // create tables
-        scriptExec.execute(user1.getProperty(url), user1.getProperty(user), user1.getProperty(password), "createTables.sql");
+        scriptExec.execute(userConnection, "createTables.sql");
 
-        DataGenerator generator = new DataGenerator();
-        List<Student> students = generator.getStudents();
-        List<Group> groups = generator.getGroups();
-        List<Course> courses = generator.getCourses();
-        generator.relateStudentsToGroups(students, groups);
-        generator.relateStudentsToCourses(students, courses);
-        
-        ConnectionFactory connectionFactory = new ConnectionFactory(user1.getProperty(url), user1.getProperty(user), user1.getProperty(password));
-        GroupDAO groupDAO = new GroupDAOImpl(connectionFactory);
-        StudentDAO studentDAO = new StudentDAOImpl(connectionFactory);
-        CourseDAO courseDAO = new CourseDAOImpl(connectionFactory);
-        
-        UserInterface userInterface = new UserInterface(groupDAO, studentDAO, courseDAO);
-
-        try {
-            groupDAO.create(groups);
-            studentDAO.insert(students);
-            courseDAO.create(courses);
-            studentDAO.assignToCourse(students);
-            userInterface.runMenu();
-        } catch (DAOException e) {
-            System.out.println(e.getMessage());
-        }
+        ApplicationRunner runner = new ApplicationRunner();
+        runner.runApp(userConnection);
         
         // drop database
-        scriptExec.execute(postgres.getProperty(url), postgres.getProperty(user), postgres.getProperty(password), "deleteDB.sql");
+        scriptExec.execute(postgresConnection, "deleteDB.sql");
     }
 }

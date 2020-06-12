@@ -1,4 +1,4 @@
-package com.ua.foxminded.dao.impl;
+package com.ua.foxminded.controller.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ua.foxminded.dao.ConnectionFactory;
-import com.ua.foxminded.dao.GroupDAO;
-import com.ua.foxminded.dao.exceptions.DAOException;
+import com.ua.foxminded.controller.dao.ConnectionFactory;
+import com.ua.foxminded.controller.dao.GroupDAO;
+import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
 import com.ua.foxminded.model.Group;
 
 public class GroupDAOImpl implements GroupDAO {
@@ -22,19 +22,19 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public void create(Group group) throws DAOException {
+    public void create(Group group) throws SchoolDAOException {
         String sql = "INSERT INTO groups (group_name) VALUES (?);";
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setString(1, group.getName());
             pStatement.execute();
         } catch (SQLException e) {
-            throw new DAOException("Can't write group.");
+            throw new SchoolDAOException("Can't write group.");
         } 
     }
 
     @Override
-    public void create(List<Group> groups) throws DAOException {
+    public void create(List<Group> groups) throws SchoolDAOException {
         String sql = "INSERT INTO groups (group_name) VALUES (?);";
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -44,12 +44,12 @@ public class GroupDAOImpl implements GroupDAO {
             }
             pStatement.executeBatch();
         } catch (SQLException e) {
-            throw new DAOException("Can't write groups.");
+            throw new SchoolDAOException("Can't write groups.");
         } 
     }
 
     @Override
-    public Map<Group, Integer> getMinStudentCount() throws DAOException {
+    public Map<Group, Integer> getMinStudentCount() throws SchoolDAOException {
         String sql = "SELECT g.group_id, g.group_name, COUNT(s.group_id) FROM groups g JOIN students s USING (group_id)" +
                  " GROUP BY g.group_id, g.group_name HAVING COUNT(*) = (SELECT MIN(COUNT) FROM (SELECT g.group_name, COUNT(s.student_id)" +
                  " FROM groups g JOIN students s USING (group_id) GROUP BY g.group_name) g);";
@@ -65,13 +65,13 @@ public class GroupDAOImpl implements GroupDAO {
                 result.put(group, count);
             }
         } catch (SQLException e) {
-            throw new DAOException("Can't get group with min student count.");
+            throw new SchoolDAOException("Can't get group with min student count.");
         }
         return result;
     }
 
     @Override
-    public Map<Group, Integer> getByStudentCount(int maxCount) throws DAOException {
+    public Map<Group, Integer> getByStudentCount(int maxCount) throws SchoolDAOException {
         String sql = "SELECT g.group_id, g.group_name,COUNT(s.group_id) AS students FROM groups g JOIN" + 
                 " students s USING (group_id) GROUP BY g.group_id, g.group_name HAVING COUNT(*) <= ?;";
         Map<Group, Integer> result = new HashMap<>();
@@ -88,13 +88,13 @@ public class GroupDAOImpl implements GroupDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DAOException("Can't get student by count.");
+            throw new SchoolDAOException("Can't get student by count.");
         }
         return result;
     }
 
     @Override
-    public List<Group> showAll() throws DAOException {
+    public List<Group> showAll() throws SchoolDAOException {
         String sql = "SELECT group_id, group_name FROM groups;";
         List<Group> result = new ArrayList<>();
         try (Connection connection = connectionFactory.getConnection();
@@ -107,7 +107,7 @@ public class GroupDAOImpl implements GroupDAO {
                 result.add(group);
             }
         } catch (SQLException e) {
-            throw new DAOException("Can't read groups");
+            throw new SchoolDAOException("Can't read groups");
         }
         return result;
     }
