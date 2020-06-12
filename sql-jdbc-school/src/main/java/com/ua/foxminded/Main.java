@@ -42,6 +42,7 @@ public class Main {
         List<Group> groups = generator.getGroups();
         List<Course> courses = generator.getCourses();
         generator.relateStudentsToGroups(students, groups);
+        generator.relateStudentsToCourses(students, courses);
         
         ConnectionFactory connectionFactory = new ConnectionFactory(user1.getProperty(url), user1.getProperty(user), user1.getProperty(password));
         GroupDAO groupDAO = new GroupDAOImpl(connectionFactory);
@@ -54,7 +55,7 @@ public class Main {
             groupDAO.create(groups);
             studentDAO.insert(students);
             courseDAO.create(courses);
-            studentDAO.assignToCourse(generator.relateStudentsToCourses(students, courses));
+            studentDAO.assignToCourse(students);
             userInterface.runMenu();
         } catch (DAOException e) {
             System.out.println(e.getMessage());

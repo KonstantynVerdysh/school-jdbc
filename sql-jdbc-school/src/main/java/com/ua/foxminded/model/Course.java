@@ -1,9 +1,13 @@
 package com.ua.foxminded.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Course {
     private int id;
     private String name;
     private String description;
+    private List<Student> students;
     
     public Course() {}
     
@@ -11,6 +15,7 @@ public class Course {
         this.id = id;
         this.name = name;
         this.description = description;
+        students = new ArrayList<>();
     }
 
     public int getId() {
@@ -35,5 +40,13 @@ public class Course {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Student student) {
+        students.add(student);
     }
 }

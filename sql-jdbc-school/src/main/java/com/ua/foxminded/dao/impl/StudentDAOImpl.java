@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.ua.foxminded.dao.ConnectionFactory;
 import com.ua.foxminded.dao.StudentDAO;
@@ -106,13 +105,13 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void assignToCourse(Map<Student, List<Course>> students) throws DAOException {
+    public void assignToCourse(List<Student> students) throws DAOException {
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
-            for (Map.Entry<Student, List<Course>> entry : students.entrySet()) {
-                for (Course course : entry.getValue()) {
-                    pStatement.setInt(1, entry.getKey().getId());
+            for (Student student : students) {
+                for (Course course : student.getCourses()) {
+                    pStatement.setInt(1, student.getId());
                     pStatement.setInt(2, course.getId());
                     pStatement.addBatch();
                 }

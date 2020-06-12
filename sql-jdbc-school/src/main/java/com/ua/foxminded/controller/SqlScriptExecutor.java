@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.ua.foxminded.dao.ConnectionFactory;
+
 public class SqlScriptExecutor {
     public void execute(String url, String user, String password, String script) {
+        ConnectionFactory connectionFactory = new ConnectionFactory(url, user, password);
         String filePath = "";
         try {
             if (getClass().getClassLoader().getResource(script) == null) {
@@ -21,7 +23,7 @@ public class SqlScriptExecutor {
         }
         
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath));
-             Connection connection = DriverManager.getConnection(url, user, password);
+             Connection connection = connectionFactory.getConnection();
             Statement statement = connection.createStatement()) {
             String line = null;
             StringBuilder query = new StringBuilder();
@@ -30,6 +32,7 @@ public class SqlScriptExecutor {
             }
             statement.execute(query.toString());
         } catch (IOException | SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage());
         }
     }

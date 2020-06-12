@@ -1,9 +1,7 @@
 package com.ua.foxminded.controller;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import com.ua.foxminded.model.Course;
@@ -11,25 +9,25 @@ import com.ua.foxminded.model.Group;
 import com.ua.foxminded.model.Student;
 
 public class DataGenerator {
-    public Map<Student, List<Course>> relateStudentsToCourses(List<Student> students, List<Course> courses) {
-        Map<Student, List<Course>> result = new LinkedHashMap<>();
+    public void relateStudentsToCourses(List<Student> students, List<Course> courses) {
         for (Student student : students) {
             int maxCoursesForStudent = getRandomInteger(3);
             List<Course> studentCourses = new ArrayList<>();
             for (int count = 0; count <= maxCoursesForStudent; count++) {
-                Course randomCourse = courses.get(getRandomInteger(courses.size()));
+                int randomCourseId = getRandomInteger(courses.size());
+                Course randomCourse = courses.get(randomCourseId);
                 if (!studentCourses.contains(randomCourse)) {
                     studentCourses.add(randomCourse);
+                    courses.get(randomCourseId).setStudents(student);
                 } else {
                     maxCoursesForStudent++;
                 }
             }
-            result.put(student, studentCourses);
+            student.setCourses(studentCourses);
         }
-        return result;
     }
     
-    public List<Student> relateStudentsToGroups(List<Student> students, List<Group> groups) {
+    public void relateStudentsToGroups(List<Student> students, List<Group> groups) {
         int studentIndex = 0;
         for (int count = 0; count < groups.size(); count++) {
             int groupCapacity = getRandomCapacity();
@@ -41,7 +39,6 @@ public class DataGenerator {
                 studentIndex++;
             }
         }
-        return students;
     }
     
     public List<Student> getStudents() {

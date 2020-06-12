@@ -1,8 +1,9 @@
 package com.ua.foxminded.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import org.apache.commons.dbcp.BasicDataSource;
 
 public class ConnectionFactory {
     private final String url;
@@ -16,6 +17,13 @@ public class ConnectionFactory {
     }
     
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setUrl(url);
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+        dataSource.setMinIdle(5);
+        dataSource.setMaxIdle(10);
+        dataSource.setMaxOpenPreparedStatements(100);
+        return dataSource.getConnection();
     }
 }

@@ -11,6 +11,7 @@
     <surefire.plugin.version>2.22.2</surefire.plugin.version>
     <ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
     <postgresql.version>9.1-901.jdbc4</postgresql.version>
+    <commons.dbcp.version>1.4</commons.dbcp.version>
   </properties>
   <dependencies>
     <dependency>
@@ -38,6 +39,11 @@
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>${commons.dbcp.version}</version>
     </dependency>
   </dependencies>
   <build>
