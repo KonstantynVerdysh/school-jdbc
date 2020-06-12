@@ -76,16 +76,26 @@ public class UserInterface {
     
     private void removeStudentFromCourse() throws SchoolDAOException {
         int studentId = selectStudentToPrintCourses();
+        List<Course> studentCourses = getStudentCourses(studentId);
         int courseId = selectCourse();
-        studentDAO.deleteFromCourse(studentId, courseId);
-        System.out.println("Student removed from the course success.");
+        if (getCoursesId(studentCourses).contains(courseId)) {
+            studentDAO.deleteFromCourse(studentId, courseId);
+            System.out.println("Student removed from the course success.");
+        } else {
+            System.out.println("Student havn't this course.");
+        }
     }
     
     private void addStudentToCourse() throws SchoolDAOException {
         int studentId = selectStudentToPrintCourses();
-        int courseId = selectCourse();
-        studentDAO.assignToCourse(studentId, courseId);
-        System.out.println("Student added to the course success.");
+        List<Course> studentCourses = getStudentCourses(studentId);
+        int courseId = selectCourse(); 
+        if (!getCoursesId(studentCourses).contains(courseId)) {
+            studentDAO.assignToCourse(studentId, courseId);
+            System.out.println("Student added to the course success.");
+        } else {
+            System.out.println("Student already on this course.");
+        }
     }
     
     private int selectCourse() throws SchoolDAOException {
@@ -102,22 +112,14 @@ public class UserInterface {
         printStudents(students);
         System.out.println(UNDER_LINE);
         System.out.println("Please enter student_id: ");
-        int studentId = getTrueAmount(students.size());
+        return getTrueAmount(students.size());
+    }
+    
+    private List<Course> getStudentCourses(int studentId) throws SchoolDAOException {
         List<Course> courses = courseDAO.getByStudentId(studentId);
         printCourses(courses);
         System.out.println(UNDER_LINE);
-        return studentId;
-    }
-    
-    private int getTrueAmount(int maxSize) {
-        int result = 0;
-        while (true) {
-            result = getNumber();
-            if (result <= maxSize && result > 0)
-                break;
-            System.out.println("Incorrect id.");
-        }
-        return result;
+        return courses;
     }
     
     private void deleteStudent() throws SchoolDAOException {
@@ -163,12 +165,6 @@ public class UserInterface {
         return result;
     }
     
-    private List<String> getCoursesNames(List<Course> course) {
-        return course.stream()
-                .map(Course::getName)
-                .collect(Collectors.toList());
-    }
-    
     private void findGroups() throws SchoolDAOException {
         System.out.println("Please enter max student count for search: ");
         int count = getNumber();
@@ -207,5 +203,28 @@ public class UserInterface {
         for (Student student : students) {
             System.out.println(student.getId() + ". " + student.getFirstName() + " " + student.getLastName());
         }
+    }
+    
+    private int getTrueAmount(int maxSize) {
+        int result = 0;
+        while (true) {
+            result = getNumber();
+            if (result <= maxSize && result > 0)
+                break;
+            System.out.println("Incorrect id.");
+        }
+        return result;
+    }
+    
+    private List<Integer> getCoursesId(List<Course> course) {
+        return course.stream()
+                .map(Course::getId)
+                .collect(Collectors.toList());
+    }
+    
+    private List<String> getCoursesNames(List<Course> course) {
+        return course.stream()
+                .map(Course::getName)
+                .collect(Collectors.toList());
     }
 }
