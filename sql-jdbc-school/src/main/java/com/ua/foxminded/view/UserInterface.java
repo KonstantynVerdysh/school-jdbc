@@ -104,7 +104,7 @@ public class UserInterface {
         System.out.println(UNDER_LINE);
         System.out.println("Please enter course to add.");
         System.out.println("course_id: ");
-        return getTrueAmount(courses.size());
+        return getLimitedNumber(courses.size());
     }
     
     private int selectStudentToPrintCourses() throws SchoolDAOException {
@@ -112,7 +112,7 @@ public class UserInterface {
         printStudents(students);
         System.out.println(UNDER_LINE);
         System.out.println("Please enter student_id: ");
-        return getTrueAmount(students.size());
+        return getLimitedNumber(students.size());
     }
     
     private List<Course> getStudentCourses(int studentId) throws SchoolDAOException {
@@ -126,7 +126,7 @@ public class UserInterface {
         List<Student> students = studentDAO.showAll();
         printStudents(students);
         System.out.println("Please enter student_id to delete.");
-        int studentId = getTrueAmount(students.size());
+        int studentId = getLimitedNumber(students.size());
         studentDAO.deleteById(studentId);
         System.out.println("Student deleted success.");
     }
@@ -148,13 +148,13 @@ public class UserInterface {
         printCourses(courses);
         System.out.println(UNDER_LINE);
         System.out.println("Please enter course name for search: ");
-        String courseName = getCourseName(courses);
+        String courseName = getInputCourseName(courses);
         List<Student> students = studentDAO.getByCourseName(courseName);
         printStudents(students);
     }
     
-    private String getCourseName(List<Course> courses) {
-        List<String> coursesNames = getCoursesNames(courses);
+    private String getInputCourseName(List<Course> courses) {
+        List<String> coursesNames = getCoursesName(courses);
         String result = "";
         while (true) {
             result = scanner.next();
@@ -167,12 +167,12 @@ public class UserInterface {
     
     private void findGroups() throws SchoolDAOException {
         System.out.println("Please enter max student count for search: ");
-        int count = getNumber();
+        int count = getInputNumber();
         Map<Group, Integer> groups = groupDAO.getByStudentCount(count);
         printGroupsStudentCount(groups);
     }
     
-    private int getNumber() {
+    private int getInputNumber() {
         int number = 0;
         while (number == 0) {
             try {
@@ -205,10 +205,10 @@ public class UserInterface {
         }
     }
     
-    private int getTrueAmount(int maxSize) {
+    private int getLimitedNumber(int maxSize) {
         int result = 0;
         while (true) {
-            result = getNumber();
+            result = getInputNumber();
             if (result <= maxSize && result > 0)
                 break;
             System.out.println("Incorrect id.");
@@ -222,7 +222,7 @@ public class UserInterface {
                 .collect(Collectors.toList());
     }
     
-    private List<String> getCoursesNames(List<Course> course) {
+    private List<String> getCoursesName(List<Course> course) {
         return course.stream()
                 .map(Course::getName)
                 .collect(Collectors.toList());
