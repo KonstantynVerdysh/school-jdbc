@@ -12,6 +12,7 @@
     <ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
     <postgresql.version>9.1-901.jdbc4</postgresql.version>
     <commons.dbcp.version>1.4</commons.dbcp.version>
+    <h2.versin>1.4.200</h2.versin>
   </properties>
   <dependencies>
     <dependency>
@@ -31,11 +32,6 @@
       <version>${junit.jupiter.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.ibatis</groupId>
-      <artifactId>ibatis-sqlmap</artifactId>
-      <version>${ibatis.sqlmap.version}</version>
-    </dependency>
-    <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
@@ -48,7 +44,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>1.4.200</version>
+      <version>${h2.versin}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
