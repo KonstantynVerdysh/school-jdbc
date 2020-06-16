@@ -14,16 +14,16 @@ import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Student;
 
 public class StudentDAOImpl implements StudentDAO {
-    private ConnectionFactory connectionFactory;
+    private String propPath;
     
-    public StudentDAOImpl(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public StudentDAOImpl(String propPath) {
+        this.propPath = propPath;
     }
 
     @Override
     public void insert(Student student) throws SchoolDAOException {
         String sql = "INSERT INTO students (first_name, last_name) VALUES (?, ?);";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setString(1, student.getFirstName());
             pStatement.setString(2, student.getLastName());
@@ -37,7 +37,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void insert(List<Student> students) throws SchoolDAOException {
         String sql = "INSERT INTO students (group_id, first_name, last_name) VALUES (?, ?, ?);";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             for (Student student : students) {
                 if (student.getGroupId() != 0) {
@@ -57,7 +57,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void deleteById(int studentId) throws SchoolDAOException {
         String sql = "DELETE FROM students WHERE student_id = ?;";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setInt(1, studentId);
             pStatement.execute();
@@ -72,7 +72,7 @@ public class StudentDAOImpl implements StudentDAO {
                 + " c.course_name FROM students_courses JOIN courses c USING (course_id) JOIN students"
                 + " s USING (student_id) WHERE c.course_name = ?;";
         List<Student> result = new ArrayList<>();
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setString(1, courseName);
             try (ResultSet resultSet = pStatement.executeQuery()) {
@@ -94,7 +94,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void assignToCourse(int studentId, int courseId) throws SchoolDAOException {
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setInt(1, studentId);
             pStatement.setInt(2, courseId);
@@ -107,7 +107,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void assignToCourse(List<Student> students) throws SchoolDAOException {
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             for (Student student : students) {
                 for (Course course : student.getCourses()) {
@@ -125,7 +125,7 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public void deleteFromCourse(int studentId, int courseId) throws SchoolDAOException {
         String sql = "DELETE FROM students_courses WHERE student_id = ? AND course_id = ?;";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setInt(1, studentId);
             pStatement.setInt(2, courseId);
@@ -139,7 +139,7 @@ public class StudentDAOImpl implements StudentDAO {
     public List<Student> showAll() throws SchoolDAOException {
         String sql = "SELECT student_id, group_id, first_name, last_name FROM students;";
         List<Student> result = new ArrayList<>();
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql);
              ResultSet resultSet = pStatement.executeQuery()) {
             while (resultSet.next()) {

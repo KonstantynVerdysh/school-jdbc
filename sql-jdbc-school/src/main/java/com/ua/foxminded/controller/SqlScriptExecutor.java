@@ -10,7 +10,7 @@ import java.sql.Statement;
 import com.ua.foxminded.controller.dao.ConnectionFactory;
 
 public class SqlScriptExecutor {
-    public void execute(ConnectionFactory connectionFactory, String script) {
+    public void execute(String propPath, String script) {
         String filePath = "";
         try {
             if (getClass().getClassLoader().getResource(script) == null) {
@@ -22,7 +22,7 @@ public class SqlScriptExecutor {
         }
         
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath));
-             Connection connection = connectionFactory.getConnection();
+             Connection connection = ConnectionFactory.getConnection(propPath);
             Statement statement = connection.createStatement()) {
             String line = null;
             StringBuilder query = new StringBuilder();

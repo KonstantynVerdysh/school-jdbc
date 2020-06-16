@@ -20,165 +20,183 @@ public class UserInterface {
     private StudentDAO studentDAO;
     private CourseDAO courseDAO;
     
-    public UserInterface(GroupDAO groupDAO, StudentDAO studentDAO, CourseDAO courseDAO) {
-        this.groupDAO = groupDAO;
-        this.studentDAO = studentDAO;
-        this.courseDAO = courseDAO;
+    public UserInterface() {
         scanner = new Scanner(System.in);
     }
-    
-    public void runMenu() throws SchoolDAOException {
+
+    public void setGroupDAO(GroupDAO groupDAO) {
+        this.groupDAO = groupDAO;
+    }
+
+    public void setStudentDAO(StudentDAO studentDAO) {
+        this.studentDAO = studentDAO;
+    }
+
+    public void setCourseDAO(CourseDAO courseDAO) {
+        this.courseDAO = courseDAO;
+    }
+
+    public void runMenu() {
         boolean exit = false;
 
         while (!exit) {
             printMenu();
-            switch (scanner.next()) {
-            case "a":
-                findGroups();
-                break;
-            case "b":
-                findStudentsByCourse();
-                break;
-            case "c":
-                addStudent();
-                break;
-            case "d":
-                deleteStudent();
-                break;
-            case "e":
-                addStudentToCourse();
-                break;
-            case "f":
-                removeStudentFromCourse();
-                break;
-            case "g":
-                exit = true;
-                break;
-            default:
-                System.out.println("Select a letter from 'a' to 'g'");
-                break;
+            try {
+                switch (scanner.next()) {
+                case "a":
+                    print("Please enter max student count for search: ");
+                    int count = getInputNumber();
+                    executeMenuItem(findGroups(count));
+                    break;
+                case "b":
+                    List<Course> courses = courseDAO.showAll();
+                    printCourses(courses);
+                    print(UNDER_LINE);
+                    print("Please enter course name for search: ");
+                    String courseName = getInputCourseName(courses);
+                    executeMenuItem(findStudentsByCourse(courseName));
+                    break;
+                case "c":
+                    print("Please enter student first_name: ");
+                    String name = scanner.next();
+                    print("Please enter student last_name: ");
+                    String lastName = scanner.next();
+                    executeMenuItem(addStudent(name, lastName));
+                    break;
+                case "d":
+                    List<Student> students = studentDAO.showAll();
+                    print(getStudents(students));
+                    print("Please enter student_id to delete.");
+                    int studentId = getLimitedNumber(students.size());
+                    executeMenuItem(deleteStudent(studentId));
+                    break;
+                case "e":
+                    int studentId1 = selectStudent();
+                    printStudentCourses(studentId1);
+                    int courseId = selectCourse();
+                    executeMenuItem(addStudentToCourse(studentId1, courseId));
+                    break;
+                case "f":
+                    int studentId2 = selectStudent();
+                    printStudentCourses(studentId2);
+                    int courseId1 = selectCourse();
+                    executeMenuItem(removeStudentFromCourse(studentId2, courseId1));
+                    break;
+                case "g":
+                    exit = true;
+                    break;
+                default:
+                    print("Select a letter from 'a' to 'g'");
+                    break;
+                }
+            } catch (SchoolDAOException e) {
+                print(e.getMessage());
             }
         }
         scanner.close();
     }
     
     private void printMenu() {
-        System.out.println();
-        System.out.println("MENU:");
-        System.out.println("a. Find all groups with less or equals student count");
-        System.out.println("b. Find all students related to course with given name");
-        System.out.println("c. Add new student");
-        System.out.println("d. Delete student by STUDENT_ID");
-        System.out.println("e. Add a student to the course");
-        System.out.println("f. Remove the student from one of his or her courses");
-        System.out.println("g. Exit");
+        print("");
+        print("MENU:");
+        print("a. Find all groups with less or equals student count");
+        print("b. Find all students related to course with given name");
+        print("c. Add new student");
+        print("d. Delete student by STUDENT_ID");
+        print("e. Add a student to the course");
+        print("f. Remove the student from one of his or her courses");
+        print("g. Exit");
     }
     
-    private void removeStudentFromCourse() throws SchoolDAOException {
-        int studentId = selectStudentToPrintCourses();
+    public String findGroups(int count) throws SchoolDAOException {
+        Map<Group, Integer> groups = groupDAO.getByStudentCount(count);
+        return getGroupsStudentCount(groups);
+    }
+    
+    public String findStudentsByCourse(String courseName) throws SchoolDAOException {
+        List<Student> students = studentDAO.getByCourseName(courseName);
+        return getStudents(students);
+    }
+    
+    public String addStudent(String name, String lastName) throws SchoolDAOException {
+        Student student = new Student();
+        student.setFirstName(name);
+        student.setLastName(lastName);
+        studentDAO.insert(student);
+        return "New student " + name + " " + lastName + " added success.";
+    }
+    
+    public String deleteStudent(int studentId) throws SchoolDAOException {
+        studentDAO.deleteById(studentId);
+        return "Student deleted success.";
+    }
+    
+    public String addStudentToCourse(int studentId, int courseId) throws SchoolDAOException {
         List<Course> studentCourses = getStudentCourses(studentId);
-        int courseId = selectCourse();
-        if (getCoursesId(studentCourses).contains(courseId)) {
-            studentDAO.deleteFromCourse(studentId, courseId);
-            System.out.println("Student removed from the course success.");
+        if (!getCoursesId(studentCourses).contains(courseId)) {
+            studentDAO.assignToCourse(studentId, courseId);
+            return "Student added to the course success.";
         } else {
-            System.out.println("Student havn't this course.");
+            throw new SchoolDAOException("Student already on this course.");
         }
     }
     
-    private void addStudentToCourse() throws SchoolDAOException {
-        int studentId = selectStudentToPrintCourses();
+    public String removeStudentFromCourse(int studentId, int courseId) throws SchoolDAOException {       
         List<Course> studentCourses = getStudentCourses(studentId);
-        int courseId = selectCourse(); 
-        if (!getCoursesId(studentCourses).contains(courseId)) {
-            studentDAO.assignToCourse(studentId, courseId);
-            System.out.println("Student added to the course success.");
+        if (getCoursesId(studentCourses).contains(courseId)) {
+            studentDAO.deleteFromCourse(studentId, courseId);
+            return "Student removed from the course success.";
         } else {
-            System.out.println("Student already on this course.");
+            throw new SchoolDAOException("Student havn't this course.");
         }
     }
     
     private int selectCourse() throws SchoolDAOException {
         List<Course> courses = courseDAO.showAll();
         printCourses(courses);
-        System.out.println(UNDER_LINE);
-        System.out.println("Please enter course to add.");
-        System.out.println("course_id: ");
+        print(UNDER_LINE);
+        print("Please enter course to add.");
+        print("course_id: ");
         return getLimitedNumber(courses.size());
     }
     
-    private int selectStudentToPrintCourses() throws SchoolDAOException {
+    private int selectStudent() throws SchoolDAOException {
         List<Student> students = studentDAO.showAll();
-        printStudents(students);
-        System.out.println(UNDER_LINE);
-        System.out.println("Please enter student_id: ");
+        print(getStudents(students));
+        print(UNDER_LINE);
+        print("Please enter student_id: ");
         return getLimitedNumber(students.size());
     }
     
     private List<Course> getStudentCourses(int studentId) throws SchoolDAOException {
+        return courseDAO.getByStudentId(studentId);
+    }
+    
+    private void printStudentCourses(int studentId) throws SchoolDAOException {
         List<Course> courses = courseDAO.getByStudentId(studentId);
         printCourses(courses);
-        System.out.println(UNDER_LINE);
-        return courses;
+        print(UNDER_LINE);
     }
     
-    private void deleteStudent() throws SchoolDAOException {
-        List<Student> students = studentDAO.showAll();
-        printStudents(students);
-        System.out.println("Please enter student_id to delete.");
-        int studentId = getLimitedNumber(students.size());
-        studentDAO.deleteById(studentId);
-        System.out.println("Student deleted success.");
-    }
-    
-    private void addStudent() throws SchoolDAOException {
-        System.out.println("Please enter student first_name: ");
-        String name = scanner.next();
-        System.out.println("Please enter student last_name: ");
-        String lastName = scanner.next();
-        Student student = new Student();
-        student.setFirstName(name);
-        student.setLastName(lastName);
-        studentDAO.insert(student);
-        System.out.println("New student " + name + " " + lastName + " added success.");
-    }
-    
-    private void findStudentsByCourse() throws SchoolDAOException {
-        List<Course> courses = courseDAO.showAll();
-        printCourses(courses);
-        System.out.println(UNDER_LINE);
-        System.out.println("Please enter course name for search: ");
-        String courseName = getInputCourseName(courses);
-        List<Student> students = studentDAO.getByCourseName(courseName);
-        printStudents(students);
-    }
-    
-    private String getInputCourseName(List<Course> courses) {
+    private String getInputCourseName(List<Course> courses) throws SchoolDAOException {
         List<String> coursesNames = getCoursesName(courses);
         String result = "";
         while (true) {
             result = scanner.next();
             if (coursesNames.contains(result))
                 break;
-            System.out.println("Incorrect course.");
+            throw new SchoolDAOException("Incorrect course.");
         }
         return result;
     }
     
-    private void findGroups() throws SchoolDAOException {
-        System.out.println("Please enter max student count for search: ");
-        int count = getInputNumber();
-        Map<Group, Integer> groups = groupDAO.getByStudentCount(count);
-        printGroupsStudentCount(groups);
-    }
-    
-    private int getInputNumber() {
+    private int getInputNumber() throws SchoolDAOException {
         int number = 0;
         while (number == 0) {
             try {
                 number = Integer.parseInt(scanner.next());
             } catch (Exception e) {
-                System.out.println("It's not a number!");
+                throw new SchoolDAOException("It's not a number!");
             }
         }
         return number;
@@ -187,31 +205,35 @@ public class UserInterface {
     private void printCourses(List<Course> courses) {
         for (Course course : courses) {
             if (course.getDescription() != null) {
-                System.out.println(course.getId() + ". " + course.getName() + ": " + course.getDescription());
+                print(course.getId() + ". " + course.getName() + ": " + course.getDescription());
             } else {
-                System.out.println(course.getId() + ". " + course.getName());
+                print(course.getId() + ". " + course.getName());
             }
         }
     }
     
-    private void printGroupsStudentCount(Map<Group, Integer> groups) {
+    private String getGroupsStudentCount(Map<Group, Integer> groups) {
+        StringBuilder sBuilder = new StringBuilder();
         for (Map.Entry<Group, Integer> entry : groups.entrySet())
-            System.out.println(entry.getKey().getName() + " : " + entry.getValue());
+            sBuilder.append(entry.getKey().getName() + " : " + entry.getValue() + "\n");
+        return sBuilder.toString();
     }
     
-    private void printStudents(List<Student> students) {
+    private String getStudents(List<Student> students) {
+        StringBuilder sBuilder = new StringBuilder();
         for (Student student : students) {
-            System.out.println(student.getId() + ". " + student.getFirstName() + " " + student.getLastName());
+            sBuilder.append(student.getId() + ". " + student.getFirstName() + " " + student.getLastName() + "\n");
         }
+        return sBuilder.toString();
     }
     
-    private int getLimitedNumber(int maxSize) {
+    private int getLimitedNumber(int maxSize) throws SchoolDAOException {
         int result = 0;
         while (true) {
             result = getInputNumber();
             if (result <= maxSize && result > 0)
                 break;
-            System.out.println("Incorrect id.");
+            throw new SchoolDAOException("Incorrect id.");
         }
         return result;
     }
@@ -226,5 +248,13 @@ public class UserInterface {
         return course.stream()
                 .map(Course::getName)
                 .collect(Collectors.toList());
+    }
+    
+    private void print(String toPrint) {
+        System.out.println(toPrint);
+    }
+    
+    private void executeMenuItem(String menuItem) {
+        System.out.println(menuItem);
     }
 }

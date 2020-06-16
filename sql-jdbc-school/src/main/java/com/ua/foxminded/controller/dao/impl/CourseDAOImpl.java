@@ -13,16 +13,16 @@ import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
 import com.ua.foxminded.model.Course;
 
 public class CourseDAOImpl implements CourseDAO {
-    private ConnectionFactory connectionFactory;
+    private String propPath;
     
-    public CourseDAOImpl(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public CourseDAOImpl(String propPath) {
+        this.propPath = propPath;
     }
 
     @Override
     public void create(Course course) throws SchoolDAOException {
         String sql = "INSERT INTO courses (course_name, course_description) VALUES (?, ?);";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setString(1, course.getName());
             pStatement.setString(2, course.getDescription());
@@ -36,7 +36,7 @@ public class CourseDAOImpl implements CourseDAO {
     @Override
     public void create(List<Course> courses) throws SchoolDAOException {
         String sql = "INSERT INTO courses (course_name, course_description) VALUES (?, ?);";
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             for (Course course : courses) {
                 pStatement.setString(1, course.getName());
@@ -53,7 +53,7 @@ public class CourseDAOImpl implements CourseDAO {
     public List<Course> showAll() throws SchoolDAOException {
         String sql = "SELECT course_id, course_name, course_description FROM courses;";
         List<Course> result = new ArrayList<>();
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql);
              ResultSet resultSet = pStatement.executeQuery()) {
             while (resultSet.next()) {
@@ -73,7 +73,7 @@ public class CourseDAOImpl implements CourseDAO {
     public List<Course> getByStudentId(int studentId) throws SchoolDAOException {
         String sql = "SELECT c.course_id, c.course_name FROM students_courses sc JOIN courses c USING (course_id) JOIN students s USING (student_id) WHERE sc.student_id = ?;";
         List<Course> result = new ArrayList<>();
-        try (Connection connection = connectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection(propPath);
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setInt(1, studentId);
             try (ResultSet resultSet = pStatement.executeQuery()) {

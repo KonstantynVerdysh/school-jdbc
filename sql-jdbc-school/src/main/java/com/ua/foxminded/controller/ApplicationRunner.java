@@ -2,7 +2,6 @@ package com.ua.foxminded.controller;
 
 import java.util.List;
 
-import com.ua.foxminded.controller.dao.ConnectionFactory;
 import com.ua.foxminded.controller.dao.CourseDAO;
 import com.ua.foxminded.controller.dao.GroupDAO;
 import com.ua.foxminded.controller.dao.StudentDAO;
@@ -16,7 +15,7 @@ import com.ua.foxminded.model.Student;
 import com.ua.foxminded.view.UserInterface;
 
 public class ApplicationRunner {
-    public void runApp(ConnectionFactory connectionFactory) {
+    public void runApp(String propPath) {
         DataGenerator generator = new DataGenerator();
         List<Student> students = generator.getStudents();
         List<Group> groups = generator.getGroups();
@@ -24,11 +23,14 @@ public class ApplicationRunner {
         generator.relateStudentsToGroups(students, groups);
         generator.relateStudentsToCourses(students, courses);
         
-        GroupDAO groupDAO = new GroupDAOImpl(connectionFactory);
-        StudentDAO studentDAO = new StudentDAOImpl(connectionFactory);
-        CourseDAO courseDAO = new CourseDAOImpl(connectionFactory);
+        GroupDAO groupDAO = new GroupDAOImpl(propPath);
+        StudentDAO studentDAO = new StudentDAOImpl(propPath);
+        CourseDAO courseDAO = new CourseDAOImpl(propPath);
         
-        UserInterface userInterface = new UserInterface(groupDAO, studentDAO, courseDAO);
+        UserInterface userInterface = new UserInterface();
+        userInterface.setCourseDAO(courseDAO);
+        userInterface.setGroupDAO(groupDAO);
+        userInterface.setStudentDAO(studentDAO);
 
         try {
             groupDAO.create(groups);
