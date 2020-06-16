@@ -165,7 +165,7 @@ public class UserInterface {
         print(getStudents(students));
         print(UNDER_LINE);
         print("Please enter student_id: ");
-        return getLimitedNumber(students.size());
+        return getLimitedNumber(students.get(students.size() - 1).getId());
     }
     
     private List<Course> getStudentCourses(int studentId) throws SchoolDAOException {
