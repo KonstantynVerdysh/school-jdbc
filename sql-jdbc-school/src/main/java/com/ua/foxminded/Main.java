@@ -1,7 +1,7 @@
 package com.ua.foxminded;
 
 import com.ua.foxminded.controller.ApplicationRunner;
-import com.ua.foxminded.controller.SqlScriptExecutor;
+import com.ua.foxminded.controller.ScriptExecutor;
 
 public class Main { 
     private static final String CREATE_DB = "createDB.sql";
@@ -9,7 +9,7 @@ public class Main {
     private static final String DELETE_DB = "deleteDB.sql";
     
     public static void main(String[] args) {
-        SqlScriptExecutor scriptExec = new SqlScriptExecutor();
+        ScriptExecutor scriptExec = new ScriptExecutor();
 
         // create database
         scriptExec.execute(CREATE_DB);
@@ -21,6 +21,6 @@ public class Main {
         runner.runApp();
         
         // drop database
-//        scriptExec.execute(POSTGRES_PROP, DELETE_DB);
+        scriptExec.execute(DELETE_DB);
     }
 }

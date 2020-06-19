@@ -6,16 +6,16 @@ import java.util.Properties;
 
 public class PropertyReader {
     public Properties getProperties(String config) {
+        Properties prop = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(config)) {
             if (input == null) {
                 throw new IOException("File \"" + config + "\" not found");
             }
-            Properties prop = new Properties();
             prop.load(input);
             return prop; 
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return new Properties();
+        return prop;
     }
 }

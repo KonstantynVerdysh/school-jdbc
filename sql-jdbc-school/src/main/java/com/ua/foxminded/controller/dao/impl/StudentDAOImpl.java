@@ -16,7 +16,7 @@ import com.ua.foxminded.model.Student;
 public class StudentDAOImpl implements StudentDAO {
     
     @Override
-    public void insert(Student student) throws SchoolDAOException {
+    public void createStudent(Student student) throws SchoolDAOException {
         String sql = "INSERT INTO students (first_name, last_name) VALUES (?, ?);";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -30,7 +30,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void insert(List<Student> students) throws SchoolDAOException {
+    public void createStudents(List<Student> students) throws SchoolDAOException {
         String sql = "INSERT INTO students (group_id, first_name, last_name) VALUES (?, ?, ?);";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -41,7 +41,7 @@ public class StudentDAOImpl implements StudentDAO {
                     pStatement.setString(3, student.getLastName());
                     pStatement.execute();
                 } else {
-                    insert(student);
+                    createStudent(student);
                 }
             }
         } catch (SQLException e) {
@@ -50,7 +50,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void deleteById(int studentId) throws SchoolDAOException {
+    public void deleteStudentById(int studentId) throws SchoolDAOException {
         String sql = "DELETE FROM students WHERE student_id = ?;";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -62,7 +62,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public List<Student> getByCourseName(String courseName) throws SchoolDAOException {
+    public List<Student> getStudentsByCourseName(String courseName) throws SchoolDAOException {
         String sql = "SELECT s.student_id, s.group_id, s.first_name, s.last_name,"
                 + " c.course_name FROM students_courses JOIN courses c USING (course_id) JOIN students"
                 + " s USING (student_id) WHERE c.course_name = ?;";
@@ -87,7 +87,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void assignToCourse(int studentId, int courseId) throws SchoolDAOException {
+    public void assignStudentsToCourse(int studentId, int courseId) throws SchoolDAOException {
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -100,7 +100,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void assignToCourse(List<Student> students) throws SchoolDAOException {
+    public void assignStudentsToCourse(List<Student> students) throws SchoolDAOException {
         String sql = "INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -118,7 +118,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public void deleteFromCourse(int studentId, int courseId) throws SchoolDAOException {
+    public void deleteStudentFromCourse(int studentId, int courseId) throws SchoolDAOException {
         String sql = "DELETE FROM students_courses WHERE student_id = ? AND course_id = ?;";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -131,7 +131,7 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public List<Student> showAll() throws SchoolDAOException {
+    public List<Student> getStudents() throws SchoolDAOException {
         String sql = "SELECT student_id, group_id, first_name, last_name FROM students;";
         List<Student> result = new ArrayList<>();
         try (Connection connection = ConnectionFactory.getConnection();

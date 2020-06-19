@@ -17,7 +17,7 @@ import com.ua.foxminded.model.Group;
 public class GroupDAOImpl implements GroupDAO {
     
     @Override
-    public void create(Group group) throws SchoolDAOException {
+    public void createGroup(Group group) throws SchoolDAOException {
         String sql = "INSERT INTO groups (group_name) VALUES (?);";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -29,7 +29,7 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public void create(List<Group> groups) throws SchoolDAOException {
+    public void createGroups(List<Group> groups) throws SchoolDAOException {
         String sql = "INSERT INTO groups (group_name) VALUES (?);";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -44,7 +44,7 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public Map<Group, Integer> getByStudentCount(int maxCount) throws SchoolDAOException {
+    public Map<Group, Integer> getGroupsByStudentCount(int maxCount) throws SchoolDAOException {
         String sql = "SELECT g.group_id, g.group_name,COUNT(s.group_id) AS students FROM groups g JOIN" + 
                 " students s USING (group_id) GROUP BY g.group_id, g.group_name HAVING COUNT(*) <= ?;";
         Map<Group, Integer> result = new HashMap<>();
@@ -67,7 +67,7 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<Group> showAll() throws SchoolDAOException {
+    public List<Group> getGroups() throws SchoolDAOException {
         String sql = "SELECT group_id, group_name FROM groups;";
         List<Group> result = new ArrayList<>();
         try (Connection connection = ConnectionFactory.getConnection();

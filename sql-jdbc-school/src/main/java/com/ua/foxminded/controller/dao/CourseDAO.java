@@ -6,8 +6,8 @@ import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
 import com.ua.foxminded.model.Course;
 
 public interface CourseDAO {
-    void create(Course course) throws SchoolDAOException;
-    void create(List<Course> course) throws SchoolDAOException;
-    List<Course> showAll() throws SchoolDAOException;
-    List<Course> getByStudentId(int studentId) throws SchoolDAOException;
+    void createCourse(Course course) throws SchoolDAOException;
+    void createCourses(List<Course> course) throws SchoolDAOException;
+    List<Course> getCourses() throws SchoolDAOException;
+    List<Course> getCoursesByStudentId(int studentId) throws SchoolDAOException;
 }

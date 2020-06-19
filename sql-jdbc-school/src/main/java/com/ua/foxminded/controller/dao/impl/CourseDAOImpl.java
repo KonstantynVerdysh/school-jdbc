@@ -15,7 +15,7 @@ import com.ua.foxminded.model.Course;
 public class CourseDAOImpl implements CourseDAO {
     
     @Override
-    public void create(Course course) throws SchoolDAOException {
+    public void createCourse(Course course) throws SchoolDAOException {
         String sql = "INSERT INTO courses (course_name, course_description) VALUES (?, ?);";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -29,7 +29,7 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public void create(List<Course> courses) throws SchoolDAOException {
+    public void createCourses(List<Course> courses) throws SchoolDAOException {
         String sql = "INSERT INTO courses (course_name, course_description) VALUES (?, ?);";
         try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
@@ -45,7 +45,7 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public List<Course> showAll() throws SchoolDAOException {
+    public List<Course> getCourses() throws SchoolDAOException {
         String sql = "SELECT course_id, course_name, course_description FROM courses;";
         List<Course> result = new ArrayList<>();
         try (Connection connection = ConnectionFactory.getConnection();
@@ -65,7 +65,7 @@ public class CourseDAOImpl implements CourseDAO {
     }
 
     @Override
-    public List<Course> getByStudentId(int studentId) throws SchoolDAOException {
+    public List<Course> getCoursesByStudentId(int studentId) throws SchoolDAOException {
         String sql = "SELECT c.course_id, c.course_name FROM students_courses sc JOIN courses c USING (course_id) JOIN students s USING (student_id) WHERE sc.student_id = ?;";
         List<Course> result = new ArrayList<>();
         try (Connection connection = ConnectionFactory.getConnection();

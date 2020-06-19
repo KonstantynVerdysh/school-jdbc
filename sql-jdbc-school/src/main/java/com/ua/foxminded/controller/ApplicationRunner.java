@@ -2,13 +2,7 @@ package com.ua.foxminded.controller;
 
 import java.util.List;
 
-import com.ua.foxminded.controller.dao.CourseDAO;
-import com.ua.foxminded.controller.dao.GroupDAO;
-import com.ua.foxminded.controller.dao.StudentDAO;
 import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
-import com.ua.foxminded.controller.dao.impl.CourseDAOImpl;
-import com.ua.foxminded.controller.dao.impl.GroupDAOImpl;
-import com.ua.foxminded.controller.dao.impl.StudentDAOImpl;
 import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Group;
 import com.ua.foxminded.model.Student;
@@ -23,20 +17,14 @@ public class ApplicationRunner {
         generator.relateStudentsToGroups(students, groups);
         generator.relateStudentsToCourses(students, courses);
         
-        GroupDAO groupDAO = new GroupDAOImpl();
-        StudentDAO studentDAO = new StudentDAOImpl();
-        CourseDAO courseDAO = new CourseDAOImpl();
-        
-        UserInterface userInterface = new UserInterface();
-        userInterface.setCourseDAO(courseDAO);
-        userInterface.setGroupDAO(groupDAO);
-        userInterface.setStudentDAO(studentDAO);
+        SchoolManager manager = new SchoolManager();
+        UserInterface userInterface = new UserInterface(manager);
 
         try {
-            groupDAO.create(groups);
-            studentDAO.insert(students);
-            courseDAO.create(courses);
-            studentDAO.assignToCourse(students);
+            manager.createGroups(groups);
+            manager.createStudents(students);
+            manager.createCourses(courses);
+            manager.assignStudentsToCourse(students);
             userInterface.runMenu();
         } catch (SchoolDAOException e) {
             System.out.println(e.getMessage());

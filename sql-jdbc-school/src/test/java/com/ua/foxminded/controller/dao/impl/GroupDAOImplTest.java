@@ -10,23 +10,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.ua.foxminded.controller.DataGenerator;
-import com.ua.foxminded.controller.SqlScriptExecutor;
-import com.ua.foxminded.controller.dao.CourseDAO;
-import com.ua.foxminded.controller.dao.GroupDAO;
-import com.ua.foxminded.controller.dao.StudentDAO;
+import com.ua.foxminded.controller.SchoolManager;
+import com.ua.foxminded.controller.ScriptExecutor;
 import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
 import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Group;
 import com.ua.foxminded.model.Student;
-import com.ua.foxminded.view.UserInterface;
 
 class GroupDAOImplTest {
-    private static GroupDAO groupDAO;
-    private static SqlScriptExecutor scriptExec = new SqlScriptExecutor();
+    private static ScriptExecutor scriptExec = new ScriptExecutor();
+    private static SchoolManager manager = new SchoolManager();
     
     @BeforeAll
     public static void before() {
-        scriptExec.execute("test.properties", "createTables.sql");
+        scriptExec.execute("createTables.sql");
         
         DataGenerator generator = new DataGenerator();
         List<Student> students = generator.getStudents();
@@ -34,22 +31,12 @@ class GroupDAOImplTest {
         List<Course> courses = generator.getCourses();
         generator.relateStudentsToGroups(students, groups);
         generator.relateStudentsToCourses(students, courses);
-        
-        groupDAO = new GroupDAOImpl();
-        StudentDAO studentDAO = new StudentDAOImpl();
-        CourseDAO courseDAO = new CourseDAOImpl();
-        
-        UserInterface ui = new UserInterface();
-        ui = new UserInterface();
-        ui.setCourseDAO(courseDAO);
-        ui.setGroupDAO(groupDAO);
-        ui.setStudentDAO(studentDAO);
 
         try {
-            courseDAO.create(courses);
-            groupDAO.create(groups);
-            studentDAO.insert(students);
-            studentDAO.assignToCourse(students);
+            manager.createCourses(courses);
+            manager.createGroups(groups);
+            manager.createStudents(students);
+            manager.assignStudentsToCourse(students);
         } catch (SchoolDAOException e) {
             System.out.println(e.getMessage());
         }
@@ -57,7 +44,7 @@ class GroupDAOImplTest {
     
     @AfterAll
     public static void after() {
-        scriptExec.execute("test.properties", "dropObjects.sql");
+        scriptExec.execute("dropObjects.sql");
     }
 
     @Test
@@ -65,7 +52,7 @@ class GroupDAOImplTest {
         Map<Group, Integer> actual = null;
         int input = 30;
         try {
-            actual = groupDAO.getByStudentCount(input);
+            actual = manager.getGroupsByStudentCount(input);
         } catch (SchoolDAOException e) {
             System.out.println(e.getMessage());
         }
@@ -80,7 +67,7 @@ class GroupDAOImplTest {
     final void getByStudentCount_returnGroupWhenInputIsNotStudentCount() {
         Map<Group, Integer> actual = null;
         try {
-            actual = groupDAO.getByStudentCount(-100);
+            actual = manager.getGroupsByStudentCount(-100);
         } catch (SchoolDAOException e) {
             System.out.println(e.getMessage());
         }

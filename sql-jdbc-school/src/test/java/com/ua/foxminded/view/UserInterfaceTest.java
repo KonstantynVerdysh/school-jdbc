@@ -9,25 +9,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.ua.foxminded.controller.DataGenerator;
-import com.ua.foxminded.controller.SqlScriptExecutor;
-import com.ua.foxminded.controller.dao.CourseDAO;
-import com.ua.foxminded.controller.dao.GroupDAO;
-import com.ua.foxminded.controller.dao.StudentDAO;
+import com.ua.foxminded.controller.SchoolManager;
+import com.ua.foxminded.controller.ScriptExecutor;
 import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
-import com.ua.foxminded.controller.dao.impl.CourseDAOImpl;
-import com.ua.foxminded.controller.dao.impl.GroupDAOImpl;
-import com.ua.foxminded.controller.dao.impl.StudentDAOImpl;
 import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Group;
 import com.ua.foxminded.model.Student;
 
 class UserInterfaceTest {
-    private static UserInterface ui = new UserInterface();
-    private static SqlScriptExecutor scriptExec = new SqlScriptExecutor();
+    private static ScriptExecutor scriptExec = new ScriptExecutor();
+    private static SchoolManager manager = new SchoolManager();
     
     @BeforeAll
     public static void before() {
-        scriptExec.execute("test.properties", "createTables.sql");
+        scriptExec.execute("createTables.sql");
         
         DataGenerator generator = new DataGenerator();
         List<Student> students = generator.getStudents();
@@ -36,20 +31,11 @@ class UserInterfaceTest {
         generator.relateStudentsToGroups(students, groups);
         generator.relateStudentsToCourses(students, courses);
         
-        GroupDAO groupDAO = new GroupDAOImpl();
-        StudentDAO studentDAO = new StudentDAOImpl();
-        CourseDAO courseDAO = new CourseDAOImpl();
-        
-        ui = new UserInterface();
-        ui.setCourseDAO(courseDAO);
-        ui.setGroupDAO(groupDAO);
-        ui.setStudentDAO(studentDAO);
-
         try {
-            courseDAO.create(courses);
-            groupDAO.create(groups);
-            studentDAO.insert(students);
-            studentDAO.assignToCourse(students);
+            manager.createCourses(courses);
+            manager.createGroups(groups);
+            manager.createStudents(students);
+            manager.assignStudentsToCourse(students);
         } catch (SchoolDAOException e) {
             System.out.println(e.getMessage());
         }
@@ -57,113 +43,11 @@ class UserInterfaceTest {
     
     @AfterAll
     public static void after() {
-        scriptExec.execute("test.properties", "dropObjects.sql");
+        scriptExec.execute("dropObjects.sql");
     }
     
     @Test
-    final void findGroups_returnAllGroupNamesWhenInputIsMaxCountOfStudents() {
-        String actual = "";
-        try {
-            actual = ui.findGroups(30);
-        } catch (SchoolDAOException e) {
-            System.out.println(e.getMessage());
-        }
-
-        assertTrue(actual.length() > 50);
-        assertTrue(actual.charAt(2) == '-');
-        assertTrue(actual.charAt(5) == ' ');
-        assertTrue(actual.charAt(6) == ':');
-        assertTrue(actual.charAt(7) == ' ');
-    }
-    
-    @Test
-    final void findGroups_returnEmptyStringWhenInputIsSmallerThanMinGroupCount() {
-        String actual = "";
-        try {
-            actual = ui.findGroups(-22);
-        } catch (SchoolDAOException e) {
-            System.out.println(e.getMessage());
-        }
-
-        assertTrue(actual.length() == 0);
-    }
-
-    @Test
-    final void findStudentsByCourse_returnStudentsByCourseWhenInputIsCourseName() {
-        String actual = "";
-        try {
-            actual = ui.findStudentsByCourse("Political");
-        } catch (SchoolDAOException e) {
-            System.out.println(e.getMessage());
-        }
+    public void runMenuTest() {
         
-        assertTrue(actual.length() > 200);
-        assertTrue(actual.charAt(1) == '.' || actual.charAt(2) == '.');
-        assertTrue(actual.charAt(2) == ' ' || actual.charAt(3) == ' ');
-    }
-    
-    @Test
-    final void findStudentsByCourse_returnEmptyStringWhenInputIsNotCourseName() {
-        String actual = "";
-        try {
-            actual = ui.findStudentsByCourse("Party");
-        } catch (SchoolDAOException e) {
-            System.out.println(e.getMessage());
-        }
-        
-        assertTrue(actual.length() == 0);
-    }
-
-    @Test
-    final void testAddStudent() {
-        String actual = "";
-        try {
-            actual = ui.addStudent("Bill", "Klinton");
-        } catch (SchoolDAOException e) {
-            System.out.println(e.getMessage());
-        }
-        String expected = "New student Bill Klinton added success.";
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    final void deleteStudent_returnStringWhenInputIsStudentId() {
-        String actual = "";
-        try {
-            actual = ui.deleteStudent(7);
-        } catch (SchoolDAOException e) {
-            System.out.println(e.getMessage());
-        }
-        String expected = "Student deleted success.";
-        
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    final void addStudentToCourse_returnStringWhenInputIsStudentIdAndCourseId() {
-        String actual = "";
-        try {
-            actual = ui.addStudentToCourse(15, 5);
-        } catch (SchoolDAOException e) {
-            System.out.println(e.getMessage());
-        }
-        String expected = "Student added to the course success.";
-        
-        assertEquals(expected, actual);
-    }
-    
-    @Test
-    final void addStudentToCourse_returnExceptionWhenInputIsNotStudentIdAndOrNotCourseId() {  
-        SchoolDAOException myException = assertThrows(SchoolDAOException.class, 
-                () -> ui.addStudentToCourse(-1245, 1000));
-        assertTrue(myException.getMessage().contains("Can't assign relate for student and course."));
-    }
-
-    @Test
-    final void removeStudentFromCourse() {
-        SchoolDAOException myException = assertThrows(SchoolDAOException.class, 
-                () -> ui.removeStudentFromCourse(-1245, 1000));
-        assertTrue(myException.getMessage().contains("Student havn't this course."));
     }
 }
