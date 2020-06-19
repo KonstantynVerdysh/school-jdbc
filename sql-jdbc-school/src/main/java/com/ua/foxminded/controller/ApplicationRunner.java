@@ -15,7 +15,7 @@ import com.ua.foxminded.model.Student;
 import com.ua.foxminded.view.UserInterface;
 
 public class ApplicationRunner {
-    public void runApp(String propPath) {
+    public void runApp() {
         DataGenerator generator = new DataGenerator();
         List<Student> students = generator.getStudents();
         List<Group> groups = generator.getGroups();
@@ -23,9 +23,9 @@ public class ApplicationRunner {
         generator.relateStudentsToGroups(students, groups);
         generator.relateStudentsToCourses(students, courses);
         
-        GroupDAO groupDAO = new GroupDAOImpl(propPath);
-        StudentDAO studentDAO = new StudentDAOImpl(propPath);
-        CourseDAO courseDAO = new CourseDAOImpl(propPath);
+        GroupDAO groupDAO = new GroupDAOImpl();
+        StudentDAO studentDAO = new StudentDAOImpl();
+        CourseDAO courseDAO = new CourseDAOImpl();
         
         UserInterface userInterface = new UserInterface();
         userInterface.setCourseDAO(courseDAO);

@@ -12,22 +12,29 @@ public class ConnectionFactory {
     private ConnectionFactory() {}
     
     private static BasicDataSource dataSource = new BasicDataSource();
-    private static final String URL = "db.url";
-    private static final String USER_NAME = "db.user";
-    private static final String PASSWORD = "db.password";
+    private static final String POSTGRES_PROP = "postgres.properties";
     
     static {
+        PropertyReader propReader = new PropertyReader();
+        Properties properties = propReader.getProperties(POSTGRES_PROP);
+        dataSource.setUrl(properties.getProperty("db.url"));
+        dataSource.setUsername(properties.getProperty("db.user"));
+        dataSource.setPassword(properties.getProperty("db.password"));
         dataSource.setMinIdle(5);
         dataSource.setMaxIdle(10);
         dataSource.setMaxOpenPreparedStatements(100);
     }
     
-    public static Connection getConnection(String propPath) throws SQLException {
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+    
+    public static Connection getConnection(String propertiesPath) throws SQLException {
         PropertyReader propReader = new PropertyReader();
-        Properties properties = propReader.getProperties(propPath);
-        dataSource.setUrl(properties.getProperty(URL));
-        dataSource.setUsername(properties.getProperty(USER_NAME));
-        dataSource.setPassword(properties.getProperty(PASSWORD));
+        Properties properties = propReader.getProperties(propertiesPath);
+        dataSource.setUrl(properties.getProperty("db.url"));
+        dataSource.setUsername(properties.getProperty("db.user"));
+        dataSource.setPassword(properties.getProperty("db.password"));
         return dataSource.getConnection();
     }
 }

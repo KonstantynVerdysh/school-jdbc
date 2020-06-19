@@ -15,16 +15,11 @@ import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
 import com.ua.foxminded.model.Group;
 
 public class GroupDAOImpl implements GroupDAO {
-    private String propPath;
     
-    public GroupDAOImpl(String propPath) {
-        this.propPath = propPath;
-    }
-
     @Override
     public void create(Group group) throws SchoolDAOException {
         String sql = "INSERT INTO groups (group_name) VALUES (?);";
-        try (Connection connection = ConnectionFactory.getConnection(propPath);
+        try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setString(1, group.getName());
             pStatement.execute();
@@ -36,7 +31,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public void create(List<Group> groups) throws SchoolDAOException {
         String sql = "INSERT INTO groups (group_name) VALUES (?);";
-        try (Connection connection = ConnectionFactory.getConnection(propPath);
+        try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             for (Group group : groups) {
                 pStatement.setString(1, group.getName());
@@ -53,7 +48,7 @@ public class GroupDAOImpl implements GroupDAO {
         String sql = "SELECT g.group_id, g.group_name,COUNT(s.group_id) AS students FROM groups g JOIN" + 
                 " students s USING (group_id) GROUP BY g.group_id, g.group_name HAVING COUNT(*) <= ?;";
         Map<Group, Integer> result = new HashMap<>();
-        try (Connection connection = ConnectionFactory.getConnection(propPath);
+        try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql)) {
             pStatement.setInt(1, maxCount);
             try (ResultSet resultSet = pStatement.executeQuery()) {
@@ -75,7 +70,7 @@ public class GroupDAOImpl implements GroupDAO {
     public List<Group> showAll() throws SchoolDAOException {
         String sql = "SELECT group_id, group_name FROM groups;";
         List<Group> result = new ArrayList<>();
-        try (Connection connection = ConnectionFactory.getConnection(propPath);
+        try (Connection connection = ConnectionFactory.getConnection();
              PreparedStatement pStatement = connection.prepareStatement(sql);
              ResultSet resultSet = pStatement.executeQuery()) {
             while (resultSet.next()) {

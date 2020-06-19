@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,10 +22,10 @@ import com.ua.foxminded.view.UserInterface;
 
 class StudentDAOImplTest {
     private static StudentDAO studentDAO;
+    private static SqlScriptExecutor scriptExec = new SqlScriptExecutor();
     
     @BeforeAll
     public static void before() {
-        SqlScriptExecutor scriptExec = new SqlScriptExecutor();
         scriptExec.execute("test.properties", "createTables.sql");
         
         DataGenerator generator = new DataGenerator();
@@ -34,9 +35,9 @@ class StudentDAOImplTest {
         generator.relateStudentsToGroups(students, groups);
         generator.relateStudentsToCourses(students, courses);
         
-        GroupDAO groupDAO = new GroupDAOImpl("test.properties");
-        studentDAO = new StudentDAOImpl("test.properties");
-        CourseDAO courseDAO = new CourseDAOImpl("test.properties");
+        GroupDAO groupDAO = new GroupDAOImpl();
+        studentDAO = new StudentDAOImpl();
+        CourseDAO courseDAO = new CourseDAOImpl();
         
         UserInterface ui = new UserInterface();
         ui = new UserInterface();
@@ -52,6 +53,11 @@ class StudentDAOImplTest {
         } catch (SchoolDAOException e) {
             System.out.println(e.getMessage());
         }
+    }
+    
+    @AfterAll
+    public static void after() {
+        scriptExec.execute("test.properties", "dropObjects.sql");
     }
 
     @Test

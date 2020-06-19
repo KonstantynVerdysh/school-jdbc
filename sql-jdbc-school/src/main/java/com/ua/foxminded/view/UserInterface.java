@@ -91,6 +91,8 @@ public class UserInterface {
                 }
             } catch (SchoolDAOException e) {
                 print(e.getMessage());
+            } catch (Exception e) {
+                print(e.getMessage());
             }
         }
         scanner.close();
