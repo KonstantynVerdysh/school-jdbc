@@ -2,6 +2,7 @@ package com.ua.foxminded.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.ua.foxminded.controller.dao.CourseDAO;
 import com.ua.foxminded.controller.dao.GroupDAO;
@@ -80,4 +81,42 @@ public class SchoolManager {
     public List<Student> getStudents() throws SchoolDAOException {
         return studentDAO.getStudents();
     }
+   
+    public boolean addNewStudent(Student student) throws SchoolDAOException {
+        createStudent(student);
+        return true;
+    }
+    
+    public boolean deleteStudent(int studentId) throws SchoolDAOException {
+        deleteStudentById(studentId);
+        return true;
+    }
+    
+    public boolean addStudentToCourse(int studentId, int courseId) throws SchoolDAOException {
+        List<Course> studentCourses = getCoursesByStudentId(studentId);
+        if (!getCourseIdList(studentCourses).contains(courseId)) {
+            assignStudentsToCourse(studentId, courseId);
+            return true;
+        } else {
+            throw new SchoolDAOException("Student already on this course.");
+        }
+    }
+    
+    public boolean removeStudentFromCourse(int studentId, int courseId) throws SchoolDAOException {
+        List<Course> studentCourses = getCoursesByStudentId(studentId);
+        if (getCourseIdList(studentCourses).contains(courseId)) {
+            deleteStudentFromCourse(studentId, courseId);
+            return true;
+        } else {
+            throw new SchoolDAOException("Student havn't this course.");
+        }
+    }
+    
+    private List<Integer> getCourseIdList(List<Course> course) {
+        return course.stream()
+                .map(Course::getId)
+                .collect(Collectors.toList());
+    }
+    
+    
 }

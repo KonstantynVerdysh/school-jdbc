@@ -6,6 +6,7 @@ import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
 import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Group;
 import com.ua.foxminded.model.Student;
+import com.ua.foxminded.view.ConsoleIO;
 import com.ua.foxminded.view.UserInterface;
 
 public class ApplicationRunner {
@@ -18,7 +19,8 @@ public class ApplicationRunner {
         generator.relateStudentsToCourses(students, courses);
         
         SchoolManager manager = new SchoolManager();
-        UserInterface userInterface = new UserInterface(manager);
+        ConsoleIO consoleIO = new ConsoleIO();
+        UserInterface userInterface = new UserInterface(manager, consoleIO);
 
         try {
             manager.createGroups(groups);
