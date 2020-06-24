@@ -16,16 +16,22 @@ import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Student;
 
 class UserInterfaceTest {
+    private static final String MENU_ITEM_A = "a";
+    private static final String MENU_ITEM_B = "b";
+    private static final String MENU_ITEM_C = "c";
+    private static final String MENU_ITEM_D = "d";
+    private static final String MENU_ITEM_E = "e";
+    private static final String MENU_ITEM_F = "f";
+    
     private SchoolManager mockManager = Mockito.mock(SchoolManager.class);
     private ConsoleIO mockConsoleIO = Mockito.mock(ConsoleIO.class);
     private UserInterface ui = new UserInterface(mockManager, mockConsoleIO);
     
     @Test
     public void getMenuWhenUserInputIsA() throws SchoolDAOException {
-
         String expected = "Please enter student count for search: ";
         
-        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn("a");
+        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn(MENU_ITEM_A);
         Mockito.when(mockConsoleIO.getNumberInput()).thenReturn(20);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -56,7 +62,7 @@ class UserInterfaceTest {
         String expected = "Please enter course name for search: ";
         
         String course = "Biology";
-        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn("b");
+        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn(MENU_ITEM_B);
         Mockito.when(mockManager.getCourses()).thenReturn(courses);
         Mockito.when(mockConsoleIO.getCourseNameInput(courses)).thenReturn(course);
         Mockito.when(mockManager.getStudentsByCourseName(course)).thenReturn(students);
@@ -83,7 +89,7 @@ class UserInterfaceTest {
         student.setFirstName(studentName);
         student.setLastName(studentLastName);
         
-        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn("c");
+        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn(MENU_ITEM_C);
         Mockito.when(mockConsoleIO.getStringInput()).thenReturn(studentName);
         Mockito.when(mockConsoleIO.getStringInput()).thenReturn(studentLastName);
         Mockito.when(mockManager.addNewStudent(student)).thenReturn(true);
@@ -119,7 +125,7 @@ class UserInterfaceTest {
         student.setLastName("Johnson");
         students.add(student);
 
-        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn("d");
+        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn(MENU_ITEM_D);
         Mockito.when(mockManager.getStudents()).thenReturn(students);
         Mockito.when(mockConsoleIO.getNumberByMaxSizeInput(students.size())).thenReturn(studentId);
         Mockito.when(mockManager.deleteStudent(studentId)).thenReturn(true);
@@ -173,7 +179,7 @@ class UserInterfaceTest {
         int studentId = 1;
         int courseId = 1;
         
-        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn("e");
+        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn(MENU_ITEM_E);
         Mockito.when(mockManager.getStudents()).thenReturn(students);
         Mockito.when(mockConsoleIO.getNumberByMaxSizeInput(students.size())).thenReturn(studentId);
         Mockito.when(mockManager.getCoursesByStudentId(studentId)).thenReturn(courses);
@@ -237,7 +243,7 @@ class UserInterfaceTest {
         int studentId = 1;
         int courseId = 1;
         
-        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn("f");
+        Mockito.when(mockConsoleIO.getLetterInput()).thenReturn(MENU_ITEM_F);
         Mockito.when(mockManager.getStudents()).thenReturn(students);
         Mockito.when(mockConsoleIO.getNumberByMaxSizeInput(students.size())).thenReturn(studentId);
         Mockito.when(mockManager.getCoursesByStudentId(studentId)).thenReturn(courses);
