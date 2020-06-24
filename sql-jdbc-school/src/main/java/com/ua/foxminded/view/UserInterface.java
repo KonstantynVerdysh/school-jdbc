@@ -62,21 +62,21 @@ public class UserInterface {
                 List<Student> students1 = manager.getStudents();
                 print(generateStudentsString(students1));
                 print("Please enter student_id to delete.");
-                int studentId = getNumberByMaxSizeInput(students1.size());
+                int studentId = consoleIO.getNumberByMaxSizeInput(students1.size());
                 manager.deleteStudent(studentId);
                 print("Student deleted success.");
                 break;
             case "e":
-                int studentId1 = getSelectedStudentId();
+                int studentId1 = getSelectedStudentIdString();
                 printCoursesByStudentId(studentId1);
-                int courseId = getSelectedCourseId();
+                int courseId = getSelectedCourseIdString();
                 manager.addStudentToCourse(studentId1, courseId);
                 print("Student added to the course success.");
                 break;
             case "f":
-                int studentId2 = getSelectedStudentId();
+                int studentId2 = getSelectedStudentIdString();
                 printCoursesByStudentId(studentId2);
-                int courseId1 = getSelectedCourseId();
+                int courseId1 = getSelectedCourseIdString();
                 manager.removeStudentFromCourse(studentId2, courseId1);
                 print("Student removed from the course success.");
                 break;
@@ -87,8 +87,10 @@ public class UserInterface {
                 break;
             }
         } catch (SchoolDAOException e) {
+            e.printStackTrace();
             print(e.getMessage());
         } catch (RuntimeException e) {
+            e.printStackTrace();
             print(e.getMessage());
         }
         return false;
@@ -106,20 +108,20 @@ public class UserInterface {
         print("g. Exit");
     }
 
-    private int getSelectedCourseId() throws SchoolDAOException {
+    private int getSelectedCourseIdString() throws SchoolDAOException {
         List<Course> courses = manager.getCourses();
         printCourses(courses);
         print(UNDER_LINE);
         print("Please enter course_id to add: ");
-        return getNumberByMaxSizeInput(courses.size());
+        return consoleIO.getNumberByMaxSizeInput(courses.size());
     }
     
-    private int getSelectedStudentId() throws SchoolDAOException {
+    private int getSelectedStudentIdString() throws SchoolDAOException {
         List<Student> students = manager.getStudents();
         print(generateStudentsString(students));
         print(UNDER_LINE);
         print("Please enter student_id: ");
-        return getNumberByMaxSizeInput(students.get(students.size() - 1).getId());
+        return consoleIO.getNumberByMaxSizeInput(students.get(students.size() - 1).getId());
     }
     
     private void printCoursesByStudentId(int studentId) throws SchoolDAOException {
@@ -153,18 +155,7 @@ public class UserInterface {
         return sBuilder.toString();
     }
     
-    private int getNumberByMaxSizeInput(int maxSize) throws SchoolDAOException {
-        int result = 0;
-        while (true) {
-            result = consoleIO.getNumberInput();
-            if (result <= maxSize && result > 0)
-                break;
-            throw new SchoolDAOException("Incorrect id.");
-        }
-        return result;
-    }
-    
-    private void print(String toPrint) {
+    public void print(String toPrint) {
         System.out.println(toPrint);
     }
 }

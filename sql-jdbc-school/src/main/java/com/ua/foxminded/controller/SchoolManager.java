@@ -50,16 +50,8 @@ public class SchoolManager {
         return courseDAO.getCoursesByStudentId(studentId);
     }
     
-    public void createStudent(Student student) throws SchoolDAOException {
-        studentDAO.createStudent(student);
-    }
-    
     public void createStudents(List<Student> students) throws SchoolDAOException {
         studentDAO.createStudents(students);
-    }
-    
-    public void deleteStudentById(int studentId) throws SchoolDAOException {
-        studentDAO.deleteStudentById(studentId);
     }
     
     public List<Student> getStudentsByCourseName(String courseName) throws SchoolDAOException {
@@ -83,12 +75,12 @@ public class SchoolManager {
     }
    
     public boolean addNewStudent(Student student) throws SchoolDAOException {
-        createStudent(student);
+        studentDAO.createStudent(student);
         return true;
     }
     
     public boolean deleteStudent(int studentId) throws SchoolDAOException {
-        deleteStudentById(studentId);
+        studentDAO.deleteStudentById(studentId);
         return true;
     }
     

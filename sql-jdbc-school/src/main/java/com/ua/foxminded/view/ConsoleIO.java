@@ -50,6 +50,17 @@ public class ConsoleIO {
         scanner.close();
     }
     
+    public int getNumberByMaxSizeInput(int maxSize) throws SchoolDAOException {
+        int result = 0;
+        while (true) {
+            result = getNumberInput();
+            if (result <= maxSize && result > 0)
+                break;
+            throw new SchoolDAOException("Incorrect id.");
+        }
+        return result;
+    }
+    
     private List<String> getCourseNameList(List<Course> course) {
         return course.stream()
                 .map(Course::getName)
