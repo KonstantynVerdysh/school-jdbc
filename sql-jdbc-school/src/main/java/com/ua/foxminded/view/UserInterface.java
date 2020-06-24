@@ -67,16 +67,16 @@ public class UserInterface {
                 print("Student deleted success.");
                 break;
             case "e":
-                int studentId1 = getSelectedStudentIdString();
+                int studentId1 = getSelectedStudentId();
                 printCoursesByStudentId(studentId1);
-                int courseId = getSelectedCourseIdString();
+                int courseId = getSelectedCourseId();
                 manager.addStudentToCourse(studentId1, courseId);
                 print("Student added to the course success.");
                 break;
             case "f":
-                int studentId2 = getSelectedStudentIdString();
+                int studentId2 = getSelectedStudentId();
                 printCoursesByStudentId(studentId2);
-                int courseId1 = getSelectedCourseIdString();
+                int courseId1 = getSelectedCourseId();
                 manager.removeStudentFromCourse(studentId2, courseId1);
                 print("Student removed from the course success.");
                 break;
@@ -108,7 +108,7 @@ public class UserInterface {
         print("g. Exit");
     }
 
-    private int getSelectedCourseIdString() throws SchoolDAOException {
+    private int getSelectedCourseId() throws SchoolDAOException {
         List<Course> courses = manager.getCourses();
         printCourses(courses);
         print(UNDER_LINE);
@@ -116,7 +116,7 @@ public class UserInterface {
         return consoleIO.getNumberByMaxSizeInput(courses.size());
     }
     
-    private int getSelectedStudentIdString() throws SchoolDAOException {
+    private int getSelectedStudentId() throws SchoolDAOException {
         List<Student> students = manager.getStudents();
         print(generateStudentsString(students));
         print(UNDER_LINE);
