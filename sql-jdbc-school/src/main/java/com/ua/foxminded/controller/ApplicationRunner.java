@@ -2,7 +2,13 @@ package com.ua.foxminded.controller;
 
 import java.util.List;
 
+import com.ua.foxminded.controller.dao.CourseDAO;
+import com.ua.foxminded.controller.dao.GroupDAO;
+import com.ua.foxminded.controller.dao.StudentDAO;
 import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
+import com.ua.foxminded.controller.dao.impl.CourseDAOImpl;
+import com.ua.foxminded.controller.dao.impl.GroupDAOImpl;
+import com.ua.foxminded.controller.dao.impl.StudentDAOImpl;
 import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Group;
 import com.ua.foxminded.model.Student;
@@ -18,7 +24,11 @@ public class ApplicationRunner {
         generator.relateStudentsToGroups(students, groups);
         generator.relateStudentsToCourses(students, courses);
         
-        SchoolManager manager = new SchoolManager();
+        GroupDAO groupDAO = new GroupDAOImpl();
+        StudentDAO studentDAO = new StudentDAOImpl();
+        CourseDAO courseDAO = new CourseDAOImpl();
+        
+        SchoolManager manager = new SchoolManager(groupDAO, studentDAO, courseDAO);
         ConsoleIO consoleIO = new ConsoleIO();
         UserInterface userInterface = new UserInterface(manager, consoleIO);
 
@@ -30,6 +40,8 @@ public class ApplicationRunner {
             userInterface.runMenu();
         } catch (SchoolDAOException e) {
             System.out.println(e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("System error.");
         }
     }
 }

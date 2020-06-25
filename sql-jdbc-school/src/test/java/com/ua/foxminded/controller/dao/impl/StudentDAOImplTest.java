@@ -19,7 +19,7 @@ import com.ua.foxminded.model.Student;
 
 class StudentDAOImplTest {
     private static ScriptExecutor scriptExec = new ScriptExecutor();
-    private static SchoolManager manager = new SchoolManager();
+    private static SchoolManager manager = new SchoolManager(new GroupDAOImpl(), new StudentDAOImpl(), new CourseDAOImpl());
     
     @BeforeAll
     public static void before() {

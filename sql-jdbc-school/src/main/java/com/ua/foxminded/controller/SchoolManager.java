@@ -8,9 +8,6 @@ import com.ua.foxminded.controller.dao.CourseDAO;
 import com.ua.foxminded.controller.dao.GroupDAO;
 import com.ua.foxminded.controller.dao.StudentDAO;
 import com.ua.foxminded.controller.dao.exceptions.SchoolDAOException;
-import com.ua.foxminded.controller.dao.impl.CourseDAOImpl;
-import com.ua.foxminded.controller.dao.impl.GroupDAOImpl;
-import com.ua.foxminded.controller.dao.impl.StudentDAOImpl;
 import com.ua.foxminded.model.Course;
 import com.ua.foxminded.model.Group;
 import com.ua.foxminded.model.Student;
@@ -20,10 +17,10 @@ public class SchoolManager {
     private StudentDAO studentDAO;
     private CourseDAO courseDAO;
 
-    public SchoolManager() {
-        groupDAO = new GroupDAOImpl();
-        studentDAO = new StudentDAOImpl();
-        courseDAO = new CourseDAOImpl();
+    public SchoolManager(GroupDAO groupDAO, StudentDAO studentDAO, CourseDAO courseDAO) {
+        this.groupDAO = groupDAO;
+        this.studentDAO = studentDAO;
+        this.courseDAO = courseDAO;
     }
 
     public void createGroups(List<Group> groups) throws SchoolDAOException {
@@ -109,6 +106,4 @@ public class SchoolManager {
                 .map(Course::getId)
                 .collect(Collectors.toList());
     }
-    
-    
 }

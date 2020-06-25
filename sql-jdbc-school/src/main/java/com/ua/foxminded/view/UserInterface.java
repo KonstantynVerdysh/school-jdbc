@@ -87,11 +87,9 @@ public class UserInterface {
                 break;
             }
         } catch (SchoolDAOException e) {
-            e.printStackTrace();
             print(e.getMessage());
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            print(e.getMessage());
+            System.out.println("System error.");
         }
         return false;
     }
@@ -155,7 +153,7 @@ public class UserInterface {
         return sBuilder.toString();
     }
     
-    public void print(String toPrint) {
+    private void print(String toPrint) {
         System.out.println(toPrint);
     }
 }
