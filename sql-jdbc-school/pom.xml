@@ -12,7 +12,7 @@
     <ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
     <postgresql.version>9.1-901.jdbc4</postgresql.version>
     <commons.dbcp.version>1.4</commons.dbcp.version>
-    <h2.versin>1.4.200</h2.versin>
+    <h2.versin>2.0.206</h2.versin>
   </properties>
   <dependencies>
     <dependency>
